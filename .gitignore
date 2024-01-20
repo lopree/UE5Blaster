@@ -1,0 +1,15 @@
+.idea
+.vs
+Binaries
+Build
+Content
+DerivedDataCache
+Intermediate
+Plugins/MultiplayerSessions/Binaries
+Plugins/MultiplayerSessions/Intermediate
+Plugins/MultiplayerSessions/Resources
+Plugins/MultiplayerSessions/Content
+Saved
+.vsconfig
+Blaster.sln
+Blaster.uproject
