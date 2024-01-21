@@ -1,6 +1,7 @@
 #include "BlasterCharacter.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Components/WidgetComponent.h"
 #include "Camera/CameraComponent.h"
 ABlasterCharacter::ABlasterCharacter()
 {
@@ -16,6 +17,9 @@ ABlasterCharacter::ABlasterCharacter()
 
 	bUseControllerRotationYaw = false;
 	GetCharacterMovement()->bOrientRotationToMovement = true;
+	//设置头上的UI
+	OverHeadWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("OverHeadWidgetComponent"));
+	OverHeadWidgetComponent->SetupAttachment(RootComponent);
 }
 
 void ABlasterCharacter::BeginPlay()
