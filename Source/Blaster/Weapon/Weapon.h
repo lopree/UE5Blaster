@@ -19,6 +19,7 @@ class BLASTER_API AWeapon : public AActor
 
 public:
 	AWeapon();
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 protected:
 	virtual void BeginPlay() override;
@@ -43,8 +44,10 @@ private:
 	USkeletalMeshComponent* WeaponMesh;
 	UPROPERTY(VisibleAnywhere, Category = "WeaponProperty")
 	class USphereComponent* WeaponCollision;
-	UPROPERTY(VisibleAnywhere, Category = "WeaponProperty")
+	UPROPERTY(ReplicatedUsing = OnRep_WeaponState,VisibleAnywhere, Category = "WeaponProperty")
 	EWeaponState WeaponState;
+	UFUNCTION()
+	void OnRep_WeaponState();
 	UPROPERTY(VisibleAnywhere, Category = "WeaponProperty")
 	class UWidgetComponent* PickWidget;
 public:
@@ -52,5 +55,7 @@ public:
 	//是否显示捡取提示
 	void ShowPickUpWidget(bool bShowWidget);
 	//设置武器状态
-	FORCEINLINE void SetWeaponState(EWeaponState State) { WeaponState = State; }
+	void SetWeaponState(EWeaponState State);
+	//取消碰撞区域的碰撞
+	FORCEINLINE USphereComponent* GetAreaSphere() const { return WeaponCollision; }
 };
