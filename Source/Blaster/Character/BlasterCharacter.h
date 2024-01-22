@@ -4,6 +4,7 @@
 #include "GameFramework/Character.h"
 #include "BlasterCharacter.generated.h"
 
+
 class AWeapon;
 UCLASS()
 class BLASTER_API ABlasterCharacter : public ACharacter
@@ -15,6 +16,8 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	//定义CombatComponents
+	virtual void PostInitializeComponents() override;
 protected:
 	virtual void BeginPlay() override;
 
@@ -22,6 +25,8 @@ protected:
 	void MoveRight(float Value);
 	void TurnAtRate(float Rate);
 	void LookUpAtRate(float Rate);
+	//E键位绑定
+	void EquipButtonPressed();
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = Camera)
@@ -36,6 +41,10 @@ private:
 	AWeapon* OverLappingWeapon;
 	UFUNCTION()
 	void OnRep_OverLappingWeapon(AWeapon* LastWeapon);
+	UPROPERTY(VisibleAnywhere)
+	class UCombatComponent* Combat;
+	UFUNCTION(Server,Reliable)
+	void ServerEquipButtonPressed();
 public:
 	void SetOverLappingWeapon(AWeapon* Weapon);
 };

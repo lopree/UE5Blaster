@@ -5,6 +5,7 @@
 #include "Camera/CameraComponent.h"
 #include "Net/UnrealNetwork.h"
 #include "Blaster/Weapon/Weapon.h"
+#include "Blaster/BlasterComponents/CombatComponent.h"
 ABlasterCharacter::ABlasterCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -22,6 +23,9 @@ ABlasterCharacter::ABlasterCharacter()
 	//设置头上的UI
 	OverHeadWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("OverHeadWidgetComponent"));
 	OverHeadWidgetComponent->SetupAttachment(RootComponent);
+
+	Combat = CreateDefaultSubobject<UCombatComponent>(TEXT("CombatComponent"));
+	Combat->SetIsReplicated(true);
 }
 
 void ABlasterCharacter::BeginPlay()
@@ -41,14 +45,25 @@ void ABlasterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	PlayerInputComponent->BindAxis(TEXT("Move Right / Left"), this, &ABlasterCharacter::MoveRight);
 	PlayerInputComponent->BindAxis(TEXT("Turn"), this, &ABlasterCharacter::TurnAtRate);
 	PlayerInputComponent->BindAxis(TEXT("Look Up / Down Mouse"), this, &ABlasterCharacter::LookUpAtRate);
+	PlayerInputComponent->BindAction(TEXT("Equip"), IE_Pressed, this, &ABlasterCharacter::EquipButtonPressed);
 }
+void ABlasterCharacter::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+	if (Combat)
+	{
+		Combat->Character = this;
 
+	}
+} 
 void ABlasterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	//添加条件，只有真正触发的玩家才会获得提示
 	DOREPLIFETIME_CONDITION(ABlasterCharacter, OverLappingWeapon,COND_OwnerOnly);
 }
+
+
 
 void ABlasterCharacter::MoveForward(float Value)
 {
@@ -80,6 +95,21 @@ void ABlasterCharacter::LookUpAtRate(float Rate)
 {
 	AddControllerPitchInput(Rate);
 }
+//只能由服务器行动
+void ABlasterCharacter::EquipButtonPressed()
+{
+	if (Combat)
+	{
+		if (HasAuthority())
+		{
+			Combat->EquipWeapon(OverLappingWeapon);
+		}
+		else {
+			ServerEquipButtonPressed();
+		}
+		
+	}
+}
 
 void ABlasterCharacter::OnRep_OverLappingWeapon(AWeapon* LastWeapon)
 {
@@ -90,6 +120,13 @@ void ABlasterCharacter::OnRep_OverLappingWeapon(AWeapon* LastWeapon)
 	if (LastWeapon)
 	{
 		LastWeapon->ShowPickUpWidget(false);
+	}
+}
+void ABlasterCharacter::ServerEquipButtonPressed_Implementation()
+{
+	if (Combat )
+	{
+		Combat->EquipWeapon(OverLappingWeapon);
 	}
 }
 //处理服务器的触发

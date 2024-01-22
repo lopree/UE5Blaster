@@ -51,4 +51,6 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	//是否显示捡取提示
 	void ShowPickUpWidget(bool bShowWidget);
+	//设置武器状态
+	FORCEINLINE void SetWeaponState(EWeaponState State) { WeaponState = State; }
 };
