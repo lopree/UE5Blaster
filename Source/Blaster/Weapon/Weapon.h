@@ -42,5 +42,6 @@ private:
 	class UWidgetComponent* PickWidget;
 public:
 	virtual void Tick(float DeltaTime) override;
-
+	//是否显示捡取提示
+	void ShowPickUpWidget(bool bShowWidget);
 };

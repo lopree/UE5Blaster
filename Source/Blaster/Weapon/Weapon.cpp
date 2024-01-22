@@ -10,7 +10,7 @@ AWeapon::AWeapon()
 	WeaponMesh->SetupAttachment(RootComponent);
 	SetRootComponent(WeaponMesh);
 	WeaponMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
-	WeaponMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn,ECollisionResponse::ECR_Ignore);
+	WeaponMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
 	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	WeaponCollision = CreateDefaultSubobject<USphereComponent>(TEXT("SphereWeaponCollision"));
@@ -21,7 +21,7 @@ AWeapon::AWeapon()
 	PickWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("PickWidget"));
 	PickWidget->SetupAttachment(RootComponent);
 
-	
+
 }
 
 void AWeapon::BeginPlay()
@@ -39,10 +39,9 @@ void AWeapon::BeginPlay()
 void AWeapon::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	ABlasterCharacter* Character = Cast<ABlasterCharacter>(OtherActor);
-	if (Character && PickWidget)
+	if (Character)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("[Physic]Overlap"));
-		PickWidget->SetVisibility(true);
+		Character->SetOverLappingWeapon(this);
 	}
 }
 
@@ -50,5 +49,13 @@ void AWeapon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void AWeapon::ShowPickUpWidget(bool bShowWidget)
+{
+	if (PickWidget)
+	{
+		PickWidget->SetVisibility(bShowWidget);
+	}
 }
 

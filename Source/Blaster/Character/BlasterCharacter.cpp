@@ -3,6 +3,8 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Net/UnrealNetwork.h"
+#include "Blaster/Weapon/Weapon.h"
 ABlasterCharacter::ABlasterCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -26,6 +28,11 @@ void ABlasterCharacter::BeginPlay()
 { 
 	Super::BeginPlay();
 }
+void ABlasterCharacter::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+}
 void ABlasterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -34,6 +41,13 @@ void ABlasterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	PlayerInputComponent->BindAxis(TEXT("Move Right / Left"), this, &ABlasterCharacter::MoveRight);
 	PlayerInputComponent->BindAxis(TEXT("Turn"), this, &ABlasterCharacter::TurnAtRate);
 	PlayerInputComponent->BindAxis(TEXT("Look Up / Down Mouse"), this, &ABlasterCharacter::LookUpAtRate);
+}
+
+void ABlasterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	//添加条件，只有真正触发的玩家才会获得提示
+	DOREPLIFETIME_CONDITION(ABlasterCharacter, OverLappingWeapon,COND_OwnerOnly);
 }
 
 void ABlasterCharacter::MoveForward(float Value)
@@ -67,10 +81,19 @@ void ABlasterCharacter::LookUpAtRate(float Rate)
 	AddControllerPitchInput(Rate);
 }
 
-void ABlasterCharacter::Tick(float DeltaTime)
+void ABlasterCharacter::OnRep_OverLappingWeapon()
 {
-	Super::Tick(DeltaTime);
+	if (OverLappingWeapon)
+	{
+		OverLappingWeapon->ShowPickUpWidget(true);
+	}
+}
+
+void ABlasterCharacter::SetOverLappingWeapon(AWeapon* Weapon)
+{
 
 }
+
+
 
 
