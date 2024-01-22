@@ -28,4 +28,12 @@ private:
 	bool bIsCrouched;
 	UPROPERTY(BlueprintReadOnly, Category = "Movement", Meta = (AllowPrivateAccess = true))
 	bool bIsAiming;
+	UPROPERTY(BlueprintReadOnly, Category = "Movement", Meta = (AllowPrivateAccess = true))
+	float YawOffset;
+	UPROPERTY(BlueprintReadOnly, Category = "Movement", Meta = (AllowPrivateAccess = true))
+	float Lean;
+
+	FRotator CharacterRotationLastframe;
+	FRotator CharacterRotation;
+	FRotator DeltaRotation;
 };
