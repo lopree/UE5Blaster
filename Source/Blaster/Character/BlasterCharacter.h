@@ -27,6 +27,11 @@ protected:
 	void LookUpAtRate(float Rate);
 	//E键位绑定
 	void EquipButtonPressed();
+	//潜行
+	void CrouchButonPressed();
+	//瞄准
+	void AimButtonPressed();
+	void AimButtonReleased();
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = Camera)
@@ -47,4 +52,8 @@ private:
 	void ServerEquipButtonPressed();
 public:
 	void SetOverLappingWeapon(AWeapon* Weapon);
+	//玩家是否已经装备武器
+	bool IsWeaponEquipped();
+	//玩家是否瞄准
+	bool IsAiming();
 };

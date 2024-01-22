@@ -46,6 +46,9 @@ void ABlasterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	PlayerInputComponent->BindAxis(TEXT("Turn"), this, &ABlasterCharacter::TurnAtRate);
 	PlayerInputComponent->BindAxis(TEXT("Look Up / Down Mouse"), this, &ABlasterCharacter::LookUpAtRate);
 	PlayerInputComponent->BindAction(TEXT("Equip"), IE_Pressed, this, &ABlasterCharacter::EquipButtonPressed);
+	PlayerInputComponent->BindAction(TEXT("Crouch"), IE_Pressed, this, &ABlasterCharacter::CrouchButonPressed);
+	PlayerInputComponent->BindAction(TEXT("Aim"), IE_Pressed, this, &ABlasterCharacter::AimButtonPressed);
+	PlayerInputComponent->BindAction(TEXT("Aim"), IE_Released, this, &ABlasterCharacter::AimButtonReleased);
 }
 void ABlasterCharacter::PostInitializeComponents()
 {
@@ -111,6 +114,7 @@ void ABlasterCharacter::EquipButtonPressed()
 	}
 }
 
+
 void ABlasterCharacter::OnRep_OverLappingWeapon(AWeapon* LastWeapon)
 {
 	if (OverLappingWeapon)
@@ -129,6 +133,31 @@ void ABlasterCharacter::ServerEquipButtonPressed_Implementation()
 		Combat->EquipWeapon(OverLappingWeapon);
 	}
 }
+
+void ABlasterCharacter::CrouchButonPressed()
+{
+	if (bIsCrouched)
+	{
+		UnCrouch();
+	}
+	else {
+		Crouch();
+	}
+}
+void ABlasterCharacter::AimButtonPressed()
+{
+	if (Combat)
+	{
+		Combat->SetAiming(true);
+	}
+}
+void ABlasterCharacter::AimButtonReleased()
+{
+if (Combat)
+	{
+		Combat->SetAiming(false);
+	}
+}
 //处理服务器的触发
 void ABlasterCharacter::SetOverLappingWeapon(AWeapon* Weapon)
 {
@@ -145,6 +174,16 @@ void ABlasterCharacter::SetOverLappingWeapon(AWeapon* Weapon)
 			OverLappingWeapon->ShowPickUpWidget(true);
 		}
 	}
+}
+
+bool ABlasterCharacter::IsWeaponEquipped()
+{
+	return (Combat && Combat->EquippedWeapon);
+}
+
+bool ABlasterCharacter::IsAiming()
+{
+	return (Combat && Combat->bAiming);
 }
 
 
