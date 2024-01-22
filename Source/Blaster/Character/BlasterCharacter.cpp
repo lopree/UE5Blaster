@@ -81,17 +81,33 @@ void ABlasterCharacter::LookUpAtRate(float Rate)
 	AddControllerPitchInput(Rate);
 }
 
-void ABlasterCharacter::OnRep_OverLappingWeapon()
+void ABlasterCharacter::OnRep_OverLappingWeapon(AWeapon* LastWeapon)
 {
 	if (OverLappingWeapon)
 	{
 		OverLappingWeapon->ShowPickUpWidget(true);
 	}
+	if (LastWeapon)
+	{
+		LastWeapon->ShowPickUpWidget(false);
+	}
 }
-
+//处理服务器的触发
 void ABlasterCharacter::SetOverLappingWeapon(AWeapon* Weapon)
 {
-
+	if (OverLappingWeapon)
+	{
+		OverLappingWeapon->ShowPickUpWidget(false);
+	}
+	OverLappingWeapon = Weapon;
+	//只有本地玩家才会显示，服务器上没有人能看到，不需要显示
+	if (IsLocallyControlled())
+	{
+		if (OverLappingWeapon)
+		{
+			OverLappingWeapon->ShowPickUpWidget(true);
+		}
+	}
 }
 
 

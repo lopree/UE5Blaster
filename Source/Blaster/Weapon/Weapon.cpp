@@ -27,21 +27,35 @@ AWeapon::AWeapon()
 void AWeapon::BeginPlay()
 {
 	Super::BeginPlay();
-	WeaponCollision->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	WeaponCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
-	WeaponCollision->OnComponentBeginOverlap.AddDynamic(this, &AWeapon::OnSphereOverlap);
+	if (HasAuthority())
+	{
+
+		WeaponCollision->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		WeaponCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
+		WeaponCollision->OnComponentBeginOverlap.AddDynamic(this, &AWeapon::OnSphereOverlap);
+		WeaponCollision->OnComponentEndOverlap.AddDynamic(this, &AWeapon::OnSphereEndOverlap);
+	}
 	if (PickWidget)
 	{
 		PickWidget->SetVisibility(false);
 	}
 }
-
+//当玩家进入范围的时候
 void AWeapon::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	ABlasterCharacter* Character = Cast<ABlasterCharacter>(OtherActor);
 	if (Character)
 	{
 		Character->SetOverLappingWeapon(this);
+	}
+}
+//当玩家退出范围的时候
+void AWeapon::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	ABlasterCharacter* Character = Cast<ABlasterCharacter>(OtherActor);
+	if (Character)
+	{
+		Character->SetOverLappingWeapon(nullptr);
 	}
 }
 

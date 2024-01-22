@@ -35,7 +35,7 @@ private:
 	UPROPERTY(ReplicatedUsing = OnRep_OverLappingWeapon)
 	AWeapon* OverLappingWeapon;
 	UFUNCTION()
-	void OnRep_OverLappingWeapon();
+	void OnRep_OverLappingWeapon(AWeapon* LastWeapon);
 public:
 	void SetOverLappingWeapon(AWeapon* Weapon);
 };
